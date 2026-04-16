@@ -1,85 +1,81 @@
-<script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+<script setup>
+import { markRaw } from 'vue'
+import { RouterView,useRouter } from 'vue-router'
+import { House, User, Setting, SwitchButton, Grid } from '@element-plus/icons-vue'
+
+const router = useRouter()
+
+const handleMenuSelect = (index) => {
+  router.push(index)
+}
+
+const menus = [
+  {
+    label: '首页',
+    path: '/',
+    icon: markRaw(House)
+  },
+  {
+    label: '测试2',
+    icon: markRaw(User),
+    children: [
+      {
+        label: '测试2-1',
+        path: '/test2-1',
+        icon: markRaw(Grid)
+      },
+      {
+        label: '测试2-2',
+        path: '/about',
+        icon: markRaw(Setting)
+      }
+    ]
+
+  }
+]
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+  <el-container class="shell">
+    <el-aside class="shell-aside" width="200px">
+      <div class="brand">vue3-测试</div>
+      <el-menu :default-active="activePath" class="menu" @select="handleMenuSelect">
+        <template v-for="item in menus" :key="item.path">
+          <el-sub-menu v-if="item.children?.length" :index="item.path">
+            <template #title>
+              <el-icon><component :is="item.icon" /></el-icon>
+              <span>{{ item.label }}</span>
+            </template>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+            <el-menu-item v-for="child in item.children" :key="child.path" :index="child.path">
+              <el-icon><component :is="child.icon" /></el-icon>
+              <span>{{ child.label }}</span>
+            </el-menu-item>
+          </el-sub-menu>
 
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
+          <el-menu-item v-else :index="item.path">
+            <el-icon><component :is="item.icon" /></el-icon>
+            <span>{{ item.label }}</span>
+          </el-menu-item>
+        </template>
+      </el-menu>
+    </el-aside>
 
-  <RouterView />
+    <el-container>
+      <el-header class="shell-header">
+        <h1>标题一</h1>
+        <div class="header-actions">
+          <el-tag type="info" effect="dark">当前用户：张三</el-tag>
+          <el-button type="danger" plain :icon="SwitchButton" @click="logout">退出登录</el-button>
+        </div>
+      </el-header>
+      <el-main class="shell-main">
+        <router-view />
+      </el-main>
+    </el-container>
+  </el-container>
+
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
 </style>
