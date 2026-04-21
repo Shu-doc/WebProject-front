@@ -1,7 +1,6 @@
 import axios from 'axios'
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
-console.log('HTTP 模块初始化，API基础URL:', apiBaseUrl)
 
 const service = axios.create({
   baseURL: apiBaseUrl,
@@ -11,13 +10,6 @@ const service = axios.create({
 // 添加请求拦截器
 service.interceptors.request.use(
   (config) => {
-    console.log('🚀 发起请求:', {
-      url: config.baseURL + config.url,
-      method: config.method,
-      params: config.params,
-      data: config.data,
-      headers: config.headers,
-    })
     return config
   },
   (error) => {
@@ -29,12 +21,6 @@ service.interceptors.request.use(
 // 添加响应拦截器
 service.interceptors.response.use(
   (response) => {
-    console.log('✅ 收到响应:', {
-      status: response.status,
-      statusText: response.statusText,
-      url: response.config.url,
-      data: response.data,
-    })
     return response
   },
   (error) => {

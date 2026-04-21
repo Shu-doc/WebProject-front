@@ -1,7 +1,7 @@
-<script setup>
+<script setup lang="ts">
 import { markRaw, ref, onMounted, onUnmounted } from 'vue'
 import { RouterView, useRouter, useRoute } from 'vue-router'
-import { House, User, Setting, SwitchButton, Grid } from '@element-plus/icons-vue'
+import { House, User, SwitchButton, Grid } from '@element-plus/icons-vue'
 
 const router = useRouter()
 
@@ -20,15 +20,10 @@ const menus = [
     icon: markRaw(User),
     children: [
       {
-        label: '查询所有用户',
-        path: '/test2-1',
+        label: '查询用户',
+        path: '/UserQuery',
         icon: markRaw(Grid)
       },
-      {
-        label: '测试2-2',
-        path: '/about',
-        icon: markRaw(Setting)
-      }
     ]
 
   }
