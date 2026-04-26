@@ -20,6 +20,9 @@ export const deleteUser = (userId) => {
   // 实际调用接口 /user/delete/{id}
   return request({
     url: `/user/delete/${userId}`,
-    method: 'delete'
+    method: 'delete',
   })
+}
+export const addUser = (userData) => {
+  return post(`/user/register`, userData)
 }

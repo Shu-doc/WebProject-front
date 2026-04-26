@@ -1,9 +1,21 @@
 <script setup lang="ts">
-import { markRaw, ref, onMounted, onUnmounted } from 'vue'
+import { markRaw, ref, watch, onMounted, onUnmounted } from 'vue'
 import { RouterView, useRouter, useRoute } from 'vue-router'
-import { House, User, SwitchButton, Grid } from '@element-plus/icons-vue'
+import { House, User, SwitchButton, Grid, OfficeBuilding } from '@element-plus/icons-vue'
 
 const router = useRouter()
+const route = useRoute()
+
+// 管理员昵称
+const adminNickname = ref(localStorage.getItem('admin_nickname') || '管理员')
+
+// 是否在登录页（登录页不显示侧边栏和顶栏）
+const isLoginPage = ref(route.path === '/login')
+
+watch(() => route.path, (newPath) => {
+  isLoginPage.value = newPath === '/login'
+  activePath.value = newPath
+})
 
 const handleMenuSelect = (index) => {
   router.push(index)
@@ -13,30 +25,52 @@ const menus = [
   {
     label: '首页',
     path: '/',
-    icon: markRaw(House)
+    icon: markRaw(House),
+    index: '/',
   },
   {
     label: '用户管理',
     icon: markRaw(User),
+    index: 'user-management',
     children: [
       {
         label: '查询用户',
         path: '/UserQuery',
-        icon: markRaw(Grid)
+        icon: markRaw(User),
       },
-    ]
-
-  }
+      {
+        label: '添加用户',
+        path: '/UserAdd',
+        icon: markRaw(Grid),
+      },
+    ],
+  },
+  {
+    label: '自习室管理',
+    icon: markRaw(OfficeBuilding),
+    index: 'room-management',
+    children: [
+      {
+        label: '查询自习室',
+        path: '/RoomQuery',
+        icon: markRaw(User),
+      },
+      {
+        label: '新增自习室',
+        path: '/RoomAdd',
+        icon: markRaw(Grid),
+      },
+    ],
+  },
 ]
 
 // 退出登录函数
 const logout = () => {
-  console.log('退出登录')
-  // TODO: 实现退出登录逻辑
+  localStorage.removeItem('is_admin_login')
+  localStorage.removeItem('admin_nickname')
+  router.push('/login')
 }
 
-// 当前路由路径
-const route = useRoute()
 const activePath = ref(route.path)
 
 // 当前时间
@@ -60,7 +94,7 @@ const formatCurrentTime = () => {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
-    hour12: false
+    hour12: false,
   })} (UTC${timezoneStr})`
 }
 
@@ -84,12 +118,16 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <el-container class="shell">
+  <!-- 登录页不显示侧边栏和顶栏 -->
+  <template v-if="isLoginPage">
+    <router-view />
+  </template>
+  <el-container v-else class="shell">
     <el-aside class="shell-aside" width="200px">
       <div class="brand">管理员系统</div>
-      <el-menu :default-active="activePath" class="menu" @select="handleMenuSelect">
-        <template v-for="item in menus" :key="item.path">
-          <el-sub-menu v-if="item.children?.length" :index="item.path">
+      <el-menu :default-active="activePath" class="menu" @select="handleMenuSelect" unique-opened>
+        <template v-for="item in menus" :key="item.index || item.path">
+          <el-sub-menu v-if="item.children?.length" :index="item.index">
             <template #title>
               <el-icon><component :is="item.icon" /></el-icon>
               <span>{{ item.label }}</span>
@@ -113,7 +151,7 @@ onUnmounted(() => {
       <el-header class="shell-header">
         <h1>{{ currentTime }}</h1>
         <div class="header-actions">
-          <el-tag type="info" effect="dark">当前用户：张三</el-tag>
+          <el-tag type="info" effect="dark">当前用户：{{ adminNickname }}</el-tag>
           <el-button type="danger" plain :icon="SwitchButton" @click="logout">退出登录</el-button>
         </div>
       </el-header>
@@ -122,8 +160,6 @@ onUnmounted(() => {
       </el-main>
     </el-container>
   </el-container>
-
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

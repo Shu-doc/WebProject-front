@@ -5,6 +5,11 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      path: '/login',
+      name: 'Login',
+      component: () => import('../views/AdminLoginView.vue'),
+    },
+    {
       path: '/',
       name: 'home',
       component: HomeView,
@@ -22,7 +27,39 @@ const router = createRouter({
       name: 'UserQuery',
       component: () => import('../views/UserQueryView.vue'),
     },
+    {
+      path: '/UserAdd',
+      name: 'UserAdd',
+      component: () => import('../views/UserAddView.vue'),
+    },
+    {
+      path: '/RoomQuery',
+      name: 'RoomQuery',
+      component: () => import('../views/RoomQueryView.vue'),
+    },
+    {
+      path: '/RoomEdit/:roomId?',
+      name: 'RoomEdit',
+      component: () => import('../views/RoomEditView.vue'),
+    },
+    {
+      path: '/RoomAdd',
+      name: 'RoomAdd',
+      component: () => import('../views/RoomAddView.vue'),
+    },
   ],
+})
+
+// 路由守卫：未登录跳转到登录页
+router.beforeEach((to) => {
+  if (to.path === '/login') {
+    return true
+  }
+  const isLogin = localStorage.getItem('is_admin_login') === 'true'
+  if (!isLogin) {
+    return '/login'
+  }
+  return true
 })
 
 export default router
